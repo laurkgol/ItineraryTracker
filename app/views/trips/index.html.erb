@@ -1,7 +1,8 @@
 <h1>Trips</h1>
 
 <% @trips.each do |trip| %>
-  <li>
+  <div>
+    <img class="trip-photo" src=<%= trip.photo_url %> >
     <%= trip.location%>
-  </li>
+  </div>
 <% end %>
