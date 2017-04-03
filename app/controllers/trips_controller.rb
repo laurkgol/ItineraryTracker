@@ -1,10 +1,12 @@
 class TripsController < ApplicationController
   def index
     @trips = Trip.all
+    render json: @trips
   end
 
   def show
    @trip = Trip.find(params[:id])
+   render json: @trip
  end
  def new
    @trip = Trip.new
@@ -12,7 +14,11 @@ class TripsController < ApplicationController
 
  def create
    @trip = Trip.create(trip_params.merge(user: current_user))
-   redirect_to root_path
+   if @trip.save!
+     render json: @trip, status: :created
+   else
+     render json: @message.errors, status: :unprocessable_entity
+   end
  end
 
  def edit
@@ -23,23 +29,20 @@ class TripsController < ApplicationController
    @trip = Trip.find(params[:id])
    if @trip.user == current_user
        @trip.update(trip_params)
+       render json: @trip
    else
-     flash[:alert] = "Only the creater can edit"
+     render json: @message.errors, status: :unprocessable_entity
    end
-
-   redirect_to trip_path(@trip)
  end
 
  def destroy
    @trip = Trip.find(params[:id])
    if @trip.user == current_user
    @trip.destroy
- else
-   flash[:alert] = "Only the owner of this trip can delete"
+   render json: {message: "sucess"}, status: :ok
  end
-   @trip.destroy
 
-   redirect_to root_path
+
  end
 
  private
